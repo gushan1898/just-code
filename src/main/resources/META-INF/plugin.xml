@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<idea-plugin>
+    <id>com.gushan.just-code</id>
+    <name>JUST CODE</name>
+    <version>1.0.0</version>
+    
+    <vendor email="victordon@aliyun.com" url="https://github.com/gushan1898/just-code">
+        gushan
+    </vendor>
+
+    <description><![CDATA[
+        <h2>JUST CODE</h2>
+        <p>让编码更纯粹，专注于代码本身，无需手动切换输入法</p>
+        
+        <h3>主要功能</h3>
+        <ul>
+            <li><b>智能切换：</b>
+                <ul>
+                    <li>代码区域自动英文，让代码更纯粹</li>
+                    <li>注释区域自动切换系统语言，随心记录想法</li>
+                    <li>支持所有主流编程语言</li>
+                </ul>
+            </li>
+            <li><b>无感切换：</b>
+                <ul>
+                    <li>自动识别上下文</li>
+                    <li>快捷键一键切换（Ctrl/Cmd + Alt + I）</li>
+                    <li>丝滑切换，不打断思路</li>
+                </ul>
+            </li>
+            <li><b>个性配置：</b>
+                <ul>
+                    <li>字符串区域输入法独立配置</li>
+                    <li>自定义开关和行为</li>
+                    <li>支持快捷键自定义</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h3>使用说明</h3>
+        <ol>
+            <li><b>安装配置：</b>
+                <ul>
+                    <li>安装插件后重启 IDE</li>
+                    <li>首次使用时，确保系统允许 IDE 控制输入法</li>
+                    <li>在设置中配置你的偏好（可选）</li>
+                </ul>
+            </li>
+            <li><b>日常使用：</b>
+                <ul>
+                    <li>编写代码时自动使用英文输入法</li>
+                    <li>光标移动到注释区域时自动切换到系统输入法</li>
+                    <li>需要时可使用快捷键手动切换</li>
+                </ul>
+            </li>
+            <li><b>常见场景：</b>
+                <ul>
+                    <li>编写代码：自动使用英文输入法</li>
+                    <li>添加注释：自动切换到中文（或系统默认）输入法</li>
+                    <li>编写文档：在注释中直接使用中文</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h3>系统要求</h3>
+        <ul>
+            <li>IntelliJ IDEA 2023.1 或更高版本</li>
+            <li>适用于所有 JetBrains IDE 产品</li>
+            <li>支持 Windows、macOS 和 Linux</li>
+        </ul>
+
+        <h3>注意事项</h3>
+        <ul>
+            <li>macOS 用户需要在系统偏好设置中允许 IDE 控制输入法</li>
+            <li>Windows 用户建议使用微软拼音输入法获得最佳体验</li>
+            <li>如遇问题，可尝试重启 IDE 或重新配置输入法</li>
+        </ul>
+    ]]></description>
+
+    <change-notes><![CDATA[
+        <h3>1.0.0</h3>
+        <ul>
+            <li>Initial release</li>
+            <li>Basic auto-switching functionality</li>
+            <li>Settings panel for customization</li>
+            <li>Keyboard shortcut support</li>
+        </ul>
+    ]]></change-notes>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+
+    <idea-version since-build="231" until-build="233.*"/>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="com.gushan.settings.InputMethodSettings"/>
+        <applicationConfigurable
+                instance="com.gushan.settings.InputMethodConfigurable"
+                id="com.gushan.settings.InputMethodConfigurable"
+                displayName="Input Method Switcher"/>
+                
+        <projectService serviceImplementation="com.gushan.settings.ProjectInputMethodSettings"/>
+        <projectConfigurable
+                instance="com.gushan.settings.ProjectInputMethodConfigurable"
+                id="com.gushan.settings.ProjectInputMethodConfigurable"
+                displayName="Input Method Switcher"
+                parentId="tools"/>
+                
+        <statusBarWidgetFactory 
+                implementation="com.gushan.statusbar.InputMethodStatusBarWidgetFactory"
+                id="com.gushan.statusbar.InputMethodWidget"
+                order="first"/>
+                
+        <inputMethodRuleProvider 
+                implementation="com.gushan.rules.DefaultInputMethodRuleProvider"/>
+    </extensions>
+
+    <actions>
+        <action id="com.gushan.SwitchInputMethodAction" 
+                class="com.gushan.actions.SwitchInputMethodAction"
+                text="Switch Input Method"
+                description="Switch between input methods">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt I"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt I"/>
+        </action>
+    </actions>
+
+    <applicationListeners>
+        <listener class="com.gushan.listeners.EditorInputMethodListener"
+                  topic="com.intellij.openapi.editor.event.EditorMouseMotionListener"/>
+    </applicationListeners>
+</idea-plugin> 

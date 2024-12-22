@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.gushan</groupId>
+    <artifactId>just-code</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>JUST CODE</name>
+    <description>Focus on coding, auto switch input methods</description>
+    <url>https://github.com/gushan1898/just-code</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <idea.version>2023.1.4</idea.version>
+        <idea.maven.plugin.version>1.16</idea.maven.plugin.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.jetbrains.intellij.idea</groupId>
+            <artifactId>ideaIC</artifactId>
+            <version>${idea.version}</version>
+            <type>zip</type>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jetbrains.intellij.plugins</groupId>
+                <artifactId>maven-intellij-plugin</artifactId>
+                <version>${idea.maven.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile-forms</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>compile-forms</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>make</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <ideaVersion>${idea.version}</ideaVersion>
+                    <pluginName>JUST CODE</pluginName>
+                    <sandboxDir>${project.build.directory}/sandbox</sandboxDir>
+                    <javaVersion>${maven.compiler.source}</javaVersion>
+                    <sources>${project.basedir}/src/main/java</sources>
+                    <resources>${project.basedir}/src/main/resources</resources>
+                    <pluginXml>${project.basedir}/src/main/resources/META-INF/plugin.xml</pluginXml>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+        <repository>
+            <id>jetbrains-intellij-plugin-repository</id>
+            <url>https://packages.jetbrains.team/maven/p/intellij-plugin-verifier/maven</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>jetbrains-intellij-plugin-repository</id>
+            <url>https://packages.jetbrains.team/maven/p/intellij-plugin-verifier/maven</url>
+        </pluginRepository>
+    </pluginRepositories>
+</project> 

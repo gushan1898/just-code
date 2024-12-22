@@ -65,8 +65,8 @@
 
 ## 反馈与支持
 
-- 问题反馈：[GitHub Issues](https://github.com/yourusername/input-switcher/issues)
-- 功能建议：[GitHub Discussions](https://github.com/yourusername/input-switcher/discussions)
+- 问题反馈：[GitHub Issues](https://github.com/gushan1898/just-code/issues)
+- 功能建议：[GitHub Discussions](https://github.com/gushan1898/just-code/discussions)
 
 ## 开发计划
 
@@ -124,8 +124,8 @@
 
 ## 联系方式
 
-- 问题反馈：[GitHub Issues](https://github.com/yourusername/just-code/issues)
-- 功能建议：[GitHub Discussions](https://github.com/yourusername/just-code/discussions)
+- 问题反馈：[GitHub Issues](https://github.com/gushan1898/just-code/issues)
+- 功能建议：[GitHub Discussions](https://github.com/gushan1898/just-code/discussions)
 - 邮箱：your-email@example.com
 
 ## License
