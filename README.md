@@ -126,7 +126,7 @@
 
 - 问题反馈：[GitHub Issues](https://github.com/gushan1898/just-code/issues)
 - 功能建议：[GitHub Discussions](https://github.com/gushan1898/just-code/discussions)
-- 邮箱：your-email@example.com
+- 邮箱：victordon@aliyun.com
 
 ## License
 

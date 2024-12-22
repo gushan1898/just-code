@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 gushan
+ * Copyright (c) 2024 gushan (https://github.com/gushan1898/just-code)
  */
 
 package com.gushan.settings;

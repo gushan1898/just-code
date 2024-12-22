@@ -7,6 +7,9 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/*
+ * Copyright (c) 2024 gushan (https://github.com/gushan1898/just-code)
+ */
 @State(
     name = "InputMethodSettings",
     storages = {@Storage("InputMethodSwitcher.xml")}
