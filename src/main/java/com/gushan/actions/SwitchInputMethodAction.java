@@ -8,6 +8,7 @@ import com.gushan.settings.InputMethodSettings;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.project.Project;
 
 import java.awt.im.InputContext;
 import java.util.Locale;
@@ -34,7 +35,8 @@ public class SwitchInputMethodAction extends AnAction {
      */
     @Override
     public void actionPerformed(AnActionEvent e) {
-        InputMethodSettings settings = ServiceManager.getService(InputMethodSettings.class);
+        Project project = e.getProject();
+        InputMethodSettings settings = project.getService(InputMethodSettings.class);
         InputContext context = InputContext.getInstance();
         
         isDefaultInputMethod = !isDefaultInputMethod;

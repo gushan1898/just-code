@@ -5,6 +5,7 @@
 package com.gushan.rules;
 
 import com.intellij.openapi.editor.Editor;
+import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
 /**

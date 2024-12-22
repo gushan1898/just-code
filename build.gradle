@@ -1,0 +1,56 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '1.16.1'
+}
+
+group 'com.gushan'
+version '1.0.0'
+
+sourceCompatibility = 17
+targetCompatibility = 17
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+    implementation 'org.jetbrains:annotations:24.0.1'
+}
+
+intellij {
+    version = '2023.1.4'
+    type = 'IC'
+    plugins = ['java', 'platform-images', 'properties', 'yaml']
+    updateSinceUntilBuild = false
+    downloadSources = true
+}
+
+patchPluginXml {
+    sinceBuild = '231'
+    untilBuild = '233.*'
+    pluginDescription = """
+        Auto switch input methods between code and comments.
+        <br>
+        Features:
+        <ul>
+            <li>Auto switch to English in code areas</li>
+            <li>Auto switch to system input method in comments</li>
+            <li>Support all JetBrains IDEs</li>
+        </ul>
+    """
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-Xlint:deprecation'
+    options.compilerArgs << '-Xlint:unchecked'
+}
+
+buildSearchableOptions {
+    enabled = false
+} 

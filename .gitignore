@@ -1,0 +1,58 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Maven
+target/
+*.jar
+*.war
+*.ear
+*.class
+dependency-reduced-pom.xml
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Compiled files
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Logs
+*.log
+log/
+logs/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Build directories
+build/
+bin/
+
+# IDE specific
+.settings/
+.classpath
+.project
+.vscode/
+
+# Sandbox directory
+sandbox/
+
+# Debug files
+*.debug
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Local configuration file (sdk path, etc)
+local.properties 

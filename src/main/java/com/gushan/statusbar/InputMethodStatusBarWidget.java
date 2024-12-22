@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
+import com.intellij.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,6 +22,7 @@ import java.awt.event.MouseEvent;
  * @since 1.0.0
  */
 public class InputMethodStatusBarWidget extends EditorBasedWidget implements StatusBarWidget.TextPresentation {
+    public static final String WIDGET_ID = "JustCode.InputMethod";
     private String currentInputMethod = "EN";
 
     public InputMethodStatusBarWidget(@NotNull Project project) {
@@ -29,7 +31,7 @@ public class InputMethodStatusBarWidget extends EditorBasedWidget implements Sta
 
     @Override
     public @NotNull String ID() {
-        return "JustCode.InputMethod";
+        return WIDGET_ID;
     }
 
     @Override
@@ -54,7 +56,9 @@ public class InputMethodStatusBarWidget extends EditorBasedWidget implements Sta
 
     @Override
     public @Nullable Consumer<MouseEvent> getClickConsumer() {
-        return null;
+        return e -> {
+            // 处理点击事件
+        };
     }
 
     public void updateInputMethod(String method) {
