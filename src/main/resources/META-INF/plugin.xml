@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <idea-plugin>
     <id>com.gushan.just-code</id>
-    <name>JUST CODE</name>
+    <name>Just Code - Input Method Switcher</name>
     <version>1.0.0</version>
     
-    <vendor email="victordon@aliyun.com" url="https://github.com/gushan1898/just-code">
-        gushan
-    </vendor>
+    <vendor email="victordon@aliyun.com" url="https://github.com/gushan1898/just-code">gushan</vendor>
 
     <description><![CDATA[
         <h2>JUST CODE</h2>
@@ -73,7 +71,7 @@
         <ul>
             <li>macOS 用户需要在系统偏好设置中允许 IDE 控制输入法</li>
             <li>Windows 用户建议使用微软拼音输入法获得最佳体验</li>
-            <li>如遇问题，可尝试重启 IDE 或重新配置输入法</li>
+            <li>如遇问题，可尝试重启 IDE 或重置配置输入法</li>
         </ul>
     ]]></description>
 
@@ -90,29 +88,29 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
 
-    <idea-version since-build="231" until-build="233.*"/>
+    <idea-version since-build="233" until-build="243.*"/>
 
-    <extensions defaultExtensionNs="com.intellij">
+    <extensionPoints>
+        <extensionPoint name="inputMethodRule"
+                       interface="com.gushan.rules.InputMethodRule"
+                       dynamic="true"/>
+    </extensionPoints>
+
+    <extensions defaultExtensionNs="com.gushan.just-code">
+        <inputMethodRule implementation="com.gushan.rules.CommentRule"/>
+        <inputMethodRule implementation="com.gushan.rules.StringLiteralRule"/>
+        <inputMethodRule implementation="com.gushan.rules.MarkdownRule"/>
+        <projectService serviceImplementation="com.gushan.rules.DefaultInputMethodRuleProvider"/>
         <applicationService serviceImplementation="com.gushan.settings.InputMethodSettings"/>
         <applicationConfigurable
                 instance="com.gushan.settings.InputMethodConfigurable"
                 id="com.gushan.settings.InputMethodConfigurable"
-                displayName="Input Method Switcher"/>
-                
-        <projectService serviceImplementation="com.gushan.settings.ProjectInputMethodSettings"/>
-        <projectConfigurable
-                instance="com.gushan.settings.ProjectInputMethodConfigurable"
-                id="com.gushan.settings.ProjectInputMethodConfigurable"
-                displayName="Input Method Switcher"
-                parentId="tools"/>
+                displayName="Just Code"/>
                 
         <statusBarWidgetFactory 
                 implementation="com.gushan.statusbar.InputMethodStatusBarWidgetFactory"
                 id="com.gushan.statusbar.InputMethodWidget"
                 order="first"/>
-                
-        <inputMethodRuleProvider 
-                implementation="com.gushan.rules.DefaultInputMethodRuleProvider"/>
     </extensions>
 
     <actions>
@@ -120,13 +118,15 @@
                 class="com.gushan.actions.SwitchInputMethodAction"
                 text="Switch Input Method"
                 description="Switch between input methods">
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt I"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="control alt I"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt I"/>
         </action>
     </actions>
 
-    <applicationListeners>
+    <projectListeners>
+        <listener class="com.gushan.listeners.EditorInputMethodListener"
+                  topic="com.intellij.openapi.editor.event.CaretListener"/>
         <listener class="com.gushan.listeners.EditorInputMethodListener"
                   topic="com.intellij.openapi.editor.event.EditorMouseMotionListener"/>
-    </applicationListeners>
+    </projectListeners>
 </idea-plugin> 

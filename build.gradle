@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'org.jetbrains.intellij' version '1.16.1'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.0'
 }
 
 group 'com.gushan'
@@ -19,16 +20,26 @@ dependencies {
 }
 
 intellij {
-    version = '2023.1.4'
-    type = 'IC'
-    plugins = ['java', 'platform-images', 'properties', 'yaml']
+    version = '2023.3'
+    type = 'IU'
+    plugins = ['java']
     updateSinceUntilBuild = false
     downloadSources = true
 }
 
 patchPluginXml {
-    sinceBuild = '231'
-    untilBuild = '233.*'
+    sinceBuild = '233'
+    untilBuild = '243.*'
+    changeNotes = """
+      <ul>
+        <li>1.0.0
+          <ul>
+            <li>Initial release</li>
+            <li>Auto switch input methods between code and comments</li>
+            <li>Support all JetBrains IDEs from 2023.3 to 2024.3</li>
+          </ul>
+        </li>
+      </ul>"""
     pluginDescription = """
         Auto switch input methods between code and comments.
         <br>
@@ -36,7 +47,7 @@ patchPluginXml {
         <ul>
             <li>Auto switch to English in code areas</li>
             <li>Auto switch to system input method in comments</li>
-            <li>Support all JetBrains IDEs</li>
+            <li>Support all JetBrains IDEs from 2023.3</li>
         </ul>
     """
 }
@@ -47,10 +58,70 @@ test {
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
-    options.compilerArgs << '-Xlint:deprecation'
-    options.compilerArgs << '-Xlint:unchecked'
+    options.compilerArgs += ['-Xlint:unchecked', '-Xlint:deprecation']
 }
 
 buildSearchableOptions {
     enabled = false
+}
+
+signPlugin {
+    certificateChain = System.getenv('CERTIFICATE_CHAIN')
+    privateKey = System.getenv('PRIVATE_KEY')
+    password = System.getenv('PRIVATE_KEY_PASSWORD')
+}
+
+publishPlugin {
+    token = System.getenv('PUBLISH_TOKEN')
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+}
+
+tasks.buildPlugin {
+    doFirst {
+        println "Source sets:"
+        sourceSets.main.java.srcDirs.each { dir ->
+            println "Java source dir: ${dir}"
+            if (dir.exists()) {
+                dir.eachFileRecurse { file ->
+                    if (file.name.endsWith('.java')) {
+                        println "  Found Java file: ${file}"
+                    }
+                }
+            } else {
+                println "  Directory does not exist!"
+            }
+        }
+    }
+}
+
+apply plugin: 'idea'
+
+idea {
+    module {
+        sourceDirs += file('src/main/java')
+        resourceDirs += file('src/main/resources')
+    }
+}
+
+configurations.all {
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib'
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-reflect'
 } 

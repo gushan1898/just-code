@@ -4,13 +4,14 @@
 
 package com.gushan.rules;
 
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.components.Service;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.util.PsiUtilBase;
+import com.intellij.openapi.extensions.ExtensionPointName;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -20,7 +21,12 @@ import java.util.List;
  * @author gushan
  * @since 1.0.0
  */
-public class DefaultInputMethodRuleProvider {
+@Service(Service.Level.PROJECT)
+public final class DefaultInputMethodRuleProvider {
+    private static final Logger LOG = Logger.getInstance(DefaultInputMethodRuleProvider.class);
+    public static final ExtensionPointName<InputMethodRule> EP_NAME = 
+        ExtensionPointName.create("com.gushan.just-code.inputMethodRule");
+
     /** 规则列表，按优先级排序 */
     private final List<InputMethodRule> rules = new ArrayList<>();
 
@@ -28,11 +34,9 @@ public class DefaultInputMethodRuleProvider {
      * 构造函数，初始化默认规则
      */
     public DefaultInputMethodRuleProvider() {
-        // 添加默认规则，按优先级顺序添加
-        rules.add(new StringLiteralRule());
-        rules.add(new CommentRule());
-        rules.add(new XmlAttributeRule());
-        rules.add(new MarkdownRule());
+        // 从扩展点加载规则
+        EP_NAME.getExtensionList().forEach(rules::add);
+        LOG.info("DefaultInputMethodRuleProvider initialized with " + rules.size() + " rules");
     }
 
     /**
@@ -58,5 +62,14 @@ public class DefaultInputMethodRuleProvider {
      */
     public void addRule(InputMethodRule rule) {
         rules.add(rule);
+    }
+
+    /**
+     * 获取所有规则
+     *
+     * @return 规则列表
+     */
+    public List<InputMethodRule> getRules() {
+        return Collections.unmodifiableList(rules);
     }
 } 

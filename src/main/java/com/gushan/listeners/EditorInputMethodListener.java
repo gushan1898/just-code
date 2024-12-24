@@ -16,21 +16,23 @@
 
 package com.gushan.listeners;
 
+import com.gushan.rules.DefaultInputMethodRuleProvider;
 import com.gushan.rules.InputMethodRule;
 import com.gushan.settings.InputMethodSettings;
 import com.gushan.statusbar.InputMethodStatusBarWidget;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.event.CaretEvent;
+import com.intellij.openapi.editor.event.CaretListener;
 import com.intellij.openapi.editor.event.EditorMouseEvent;
 import com.intellij.openapi.editor.event.EditorMouseMotionListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.WindowManager;
-import com.intellij.util.concurrency.EdtExecutorService;
+import com.intellij.openapi.wm.StatusBar;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.im.InputContext;
-import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 输入法切换监听器
@@ -39,67 +41,79 @@ import java.util.concurrent.TimeUnit;
  * @author gushan
  * @since 1.0.0
  */
-public class EditorInputMethodListener implements EditorMouseMotionListener {
-    private final List<InputMethodRule> rules;
+public class EditorInputMethodListener implements CaretListener, EditorMouseMotionListener {
+    private static final Logger LOG = Logger.getInstance(EditorInputMethodListener.class);
+    private final DefaultInputMethodRuleProvider ruleProvider;
     private final InputMethodSettings settings;
     private final Project project;
-    private long lastCheckTime = 0;
-    private static final long CHECK_INTERVAL = 100; // 检查间隔，单位：毫秒
-
-    public EditorInputMethodListener(Project project, List<InputMethodRule> rules, InputMethodSettings settings) {
+    private final WindowManager windowManager;
+    private String lastInputMethod = null;
+    
+    public EditorInputMethodListener(@NotNull Project project) {
         this.project = project;
-        this.rules = rules;
-        this.settings = settings;
+        this.ruleProvider = project.getService(DefaultInputMethodRuleProvider.class);
+        this.settings = InputMethodSettings.getInstance();
+        this.windowManager = WindowManager.getInstance();
+        LOG.info("EditorInputMethodListener initialized");
     }
 
     @Override
+    public void caretPositionChanged(@NotNull CaretEvent e) {
+        checkAndSwitchInputMethod(e.getEditor(), e.getCaret().getOffset());
+    }
+
+    @Override 
     public void mouseMoved(@NotNull EditorMouseEvent e) {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastCheckTime < CHECK_INTERVAL) {
+        if (!settings.isAutoSwitch() || project.isDisposed()) {
             return;
         }
-        lastCheckTime = currentTime;
-
-        Editor editor = e.getEditor();
-        int offset = editor.getCaretModel().getOffset();
-
-        // 延迟执行，避免频繁切换
-        EdtExecutorService.getScheduledExecutorInstance().schedule(() -> {
-            checkAndSwitchInputMethod(editor, offset);
-        }, 200, TimeUnit.MILLISECONDS);
+        checkAndSwitchInputMethod(e.getEditor(), e.getEditor().getCaretModel().getOffset());
     }
 
     private void checkAndSwitchInputMethod(Editor editor, int offset) {
-        InputContext context = InputContext.getInstance();
-        String currentLocale = context.getLocale().toString();
+        if (!settings.isAutoSwitch()) {
+            return;
+        }
 
-        for (InputMethodRule rule : rules) {
-            if (rule.shouldSwitchInputMethod(editor, offset)) {
-                String targetMethod = rule.getTargetInputMethod();
-                if (!currentLocale.equals(targetMethod)) {
-                    context.selectInputMethod(new Locale(targetMethod));
-                    updateStatusBar(targetMethod);
-                }
-                break;
-            }
+        InputContext context = InputContext.getInstance();
+        if (context == null) {
+            LOG.warn("Input context is null");
+            return;
+        }
+
+        String currentLocale = context.getLocale().toString();
+        String targetMethod = ruleProvider.getTargetInputMethod(editor, offset);
+        
+        // 避免重复切换
+        if (!currentLocale.equals(targetMethod) && !targetMethod.equals(lastInputMethod)) {
+            LOG.info("Switching input method from " + currentLocale + " to " + targetMethod);
+            context.selectInputMethod(new Locale(targetMethod));
+            updateStatusBar(targetMethod);
+            lastInputMethod = targetMethod;
         }
     }
 
     private void updateStatusBar(String method) {
-        if (project.isDisposed()) {
+        if (windowManager == null || project.isDisposed()) {
+            LOG.warn("Window manager is null or project disposed");
             return;
         }
 
-        WindowManager windowManager = WindowManager.getInstance();
-        if (windowManager == null) {
+        StatusBar statusBar = windowManager.getStatusBar(project);
+        if (statusBar == null) {
+            LOG.warn("Status bar is null");
             return;
         }
 
         InputMethodStatusBarWidget widget = (InputMethodStatusBarWidget) 
-            windowManager.getStatusBar(project).getWidget(InputMethodStatusBarWidget.WIDGET_ID);
+            statusBar.getWidget(InputMethodStatusBarWidget.WIDGET_ID);
         
         if (widget != null) {
-            widget.updateInputMethod(method.equals(settings.codeInputMethod) ? "EN" : "CN");
+            String displayText = method.equals(settings.getDefaultCodeInputMethod()) ? "EN" : "CN";
+            LOG.debug("Updating status bar: " + displayText);
+            widget.updateInputMethod(displayText);
+        } else {
+            LOG.warn("Status bar widget not found");
         }
     }
 } 

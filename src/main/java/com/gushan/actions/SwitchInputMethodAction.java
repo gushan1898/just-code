@@ -7,8 +7,7 @@ package com.gushan.actions;
 import com.gushan.settings.InputMethodSettings;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.im.InputContext;
 import java.util.Locale;
@@ -34,18 +33,19 @@ public class SwitchInputMethodAction extends AnAction {
      * @param e 动作事件
      */
     @Override
-    public void actionPerformed(AnActionEvent e) {
-        Project project = e.getProject();
-        InputMethodSettings settings = project.getService(InputMethodSettings.class);
+    public void actionPerformed(@NotNull AnActionEvent e) {
         InputContext context = InputContext.getInstance();
+        InputMethodSettings settings = InputMethodSettings.getInstance();
         
-        isDefaultInputMethod = !isDefaultInputMethod;
-        if (isDefaultInputMethod) {
-            // 切换到系统默认输入法
-            context.selectInputMethod(new Locale(settings.defaultInputMethod));
+        if (context == null || settings == null) {
+            return;
+        }
+
+        String currentLocale = context.getLocale().toString();
+        if (currentLocale.equals(settings.getDefaultCodeInputMethod())) {
+            context.selectInputMethod(new Locale(settings.getDefaultCommentInputMethod()));
         } else {
-            // 切换到代码输入法（英文）
-            context.selectInputMethod(new Locale(settings.codeInputMethod));
+            context.selectInputMethod(new Locale(settings.getDefaultCodeInputMethod()));
         }
     }
 
